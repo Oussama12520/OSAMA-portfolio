@@ -55,6 +55,23 @@ const Admin: React.FC<AdminProps> = ({ projects, onUpdate, onLogout }) => {
     }
   };
 
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentProject.id && currentProject.title) {
+      setIsSaving(true);
+      try {
+        await saveProject(currentProject as Project);
+        setIsEditing(false);
+        onUpdate();
+      } catch (e) {
+        console.error("Save failed", e);
+        alert("Failed to save project.");
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
   const handleSaveSyncConfig = (e: React.FormEvent) => {
     e.preventDefault();
     saveSyncConfig(syncConfig.token, syncConfig.repo, syncConfig.branch);

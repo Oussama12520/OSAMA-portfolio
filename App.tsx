@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getProjects, forceRefreshFromGitHub } from './services/storageService';
+import { getProjects, forceRefreshFromGitHub, getProjectCategories } from './services/storageService';
 import { Project, ProjectCategory } from './types';
 import Admin from './components/Admin';
 import AIChat from './components/AIChat';

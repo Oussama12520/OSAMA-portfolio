@@ -18,7 +18,49 @@ export const db = new PortfolioDatabase();
 
 // Initial Mock Data
 const INITIAL_PROJECTS: Project[] = [
-  // ... initial projects remain the same ...
+  {
+    id: '1',
+    title: 'Ultimate Moderation Bot',
+    description: 'A high-performance Discord bot for server moderation, featuring auto-moderation, logging, and ticket systems.',
+    category: 'Discord Bot',
+    imageUrl: 'https://picsum.photos/400/250?random=1',
+    inviteLink: '#',
+    cost: '$20 / month',
+    technologies: ['Python', 'Discord.py', 'MongoDB'],
+    createdAt: Date.now()
+  },
+  {
+    id: '2',
+    title: 'Crypto Trading Panel',
+    description: 'Real-time cryptocurrency trading dashboard with automated buy/sell signals and portfolio tracking.',
+    category: 'Panel',
+    imageUrl: 'https://picsum.photos/400/250?random=2',
+    demoLink: '#',
+    cost: 'Contact for Quote',
+    technologies: ['React', 'Node.js', 'WebSockets'],
+    createdAt: Date.now() - 100000
+  },
+  {
+    id: '3',
+    title: 'Auto-Scraper Pro',
+    description: 'PC Software built with C# to scrape e-commerce data and export to Excel/CSV with proxy support.',
+    category: 'PC Software',
+    imageUrl: 'https://picsum.photos/400/250?random=3',
+    cost: '$150 Lifetime',
+    technologies: ['C#', '.NET 6', 'Selenium'],
+    createdAt: Date.now() - 200000
+  },
+  {
+    id: '4',
+    title: 'Telegram Notify Agent',
+    description: 'AI Agent that monitors news feeds and sends summarized alerts to Telegram channels instantly.',
+    category: 'AI Agent',
+    imageUrl: 'https://picsum.photos/400/250?random=4',
+    inviteLink: '#',
+    cost: '$10 / month',
+    technologies: ['Python', 'Aiogram', 'Gemini API'],
+    createdAt: Date.now() - 300000
+  }
 ];
 
 const GITHUB_RAW_URL = (repo: string, branch: string) =>
@@ -32,24 +74,23 @@ export const getProjects = async (): Promise<Project[]> => {
     if (count === 0) {
       console.log("Database empty, checking for remote data...");
       const config = getSyncConfig();
+      const targetRepo = config.repo || 'Oussama12520/OSAMA-portfolio';
 
-      if (config.repo && config.token) {
-        try {
-          const response = await fetch(GITHUB_RAW_URL(config.repo, config.branch));
-          if (response.ok) {
-            const remoteProjects = await response.json();
-            if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
-              console.log("Seeding from GitHub projects.json...");
-              await db.projects.bulkAdd(remoteProjects);
-              return remoteProjects;
-            }
+      try {
+        const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
+        if (response.ok) {
+          const remoteProjects = await response.json();
+          if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
+            console.log("Seeding from GitHub projects.json...");
+            await db.projects.bulkAdd(remoteProjects);
+            return remoteProjects;
           }
-        } catch (e) {
-          console.warn("Failed to fetch from remote, falling back to mock data", e);
         }
+      } catch (e) {
+        console.warn("Failed to fetch from remote, falling back to mock data", e);
       }
 
-      // Final fallback to mock data
+      // Final fallback to mock data if GitHub fetch fails or is empty
       console.log("Seeding initial mock data...");
       await db.projects.bulkAdd(INITIAL_PROJECTS);
       return INITIAL_PROJECTS;
@@ -77,7 +118,6 @@ export const saveSyncConfig = (token: string, repo: string, branch: string) => {
 };
 
 export const saveProject = async (project: Project): Promise<void> => {
-  // Dexie's put method handles both insert (if key doesn't exist) and update (if key exists)
   await db.projects.put(project);
 };
 

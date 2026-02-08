@@ -23,18 +23,20 @@ export const updateFileOnGithub = async (
         const getResponse = await fetch(`${url}?ref=${branch}&t=${Date.now()}`, {
             headers: {
                 Authorization: `token ${token}`,
-                'Cache-Control': 'no-cache'
             },
         });
 
         if (getResponse.status === 200) {
             const data = await getResponse.json();
             sha = data.sha;
-        } else if (getResponse.status !== 404) {
-            const errorData = await getResponse.json();
+        } else if (getResponse.status === 404) {
+            // File doesn't exist yet, that's fine (sha will be undefined)
+            console.log("File not found on GitHub, creating new one.");
+        } else {
+            const errorData = await getResponse.json().catch(() => ({}));
             return {
                 success: false,
-                message: `GitHub API Error: ${errorData.message || getResponse.statusText}`
+                message: `GitHub Fetch Error (${getResponse.status}): ${errorData.message || getResponse.statusText}`
             };
         }
 
@@ -47,7 +49,7 @@ export const updateFileOnGithub = async (
             },
             body: JSON.stringify({
                 message,
-                content: btoa(unescape(encodeURIComponent(content))), // Proper Base64 for Unicode
+                content: btoa(unescape(encodeURIComponent(content))),
                 sha,
                 branch,
             }),
@@ -56,14 +58,14 @@ export const updateFileOnGithub = async (
         if (putResponse.ok) {
             return { success: true, message: "Successfully synced to GitHub!" };
         } else {
-            const errorData = await putResponse.json();
+            const errorData = await putResponse.json().catch(() => ({}));
             return {
                 success: false,
-                message: `Sync failed: ${errorData.message || putResponse.statusText}`
+                message: `GitHub Sync Error (${putResponse.status}): ${errorData.message || putResponse.statusText}`
             };
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error("GitHub Sync Error:", error);
-        return { success: false, message: "Connection error. Please check your internet and token." };
+        return { success: false, message: `System Error: ${error.message || "Unknown connection error"}` };
     }
 };

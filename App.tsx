@@ -28,10 +28,31 @@ const App: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initial Load
+  // Initial Load & Auto-Update
   useEffect(() => {
     refreshProjects();
-  }, []);
+
+    // Background check for updates (only for visitors)
+    if (!isAdmin) {
+      const checkForUpdates = async () => {
+        try {
+          console.log("Checking for updates in background...");
+          await forceRefreshFromGitHub();
+          // If we got here, it means we found updates and updated the DB
+          // So reload the projects from the DB
+          const updatedProjects = await getProjects(false);
+          setProjects(updatedProjects.sort((a, b) => b.createdAt - a.createdAt));
+          console.log("Auto-updated projects from GitHub!");
+        } catch (e) {
+          // Silent failure - up to date or network error
+        }
+      };
+
+      // Delay check by 3 seconds to let initial load finish
+      const timer = setTimeout(checkForUpdates, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAdmin]);
 
   const refreshProjects = async () => {
     setIsLoading(true);

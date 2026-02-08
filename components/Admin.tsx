@@ -90,9 +90,13 @@ const Admin: React.FC<AdminProps> = ({ projects, onUpdate, onLogout }) => {
 
     setIsSyncing(true);
     try {
+      // CRITICAL FIX: Fetch fresh projects from IndexedDB before syncing
+      const { getProjects } = await import('../services/storageService');
+      const freshProjects = await getProjects();
+
       const result = await updateFileOnGithub(
         { ...syncConfig, path: 'projects.json' },
-        JSON.stringify(projects, null, 2)
+        JSON.stringify(freshProjects, null, 2)
       );
 
       if (result.success) {
@@ -100,9 +104,9 @@ const Admin: React.FC<AdminProps> = ({ projects, onUpdate, onLogout }) => {
       } else {
         alert(result.message);
       }
-    } catch (e) {
-      console.error("Sync failed", e);
-      alert("An unexpected error occurred during sync.");
+    } catch (error) {
+      console.error("Sync error:", error);
+      alert("Failed to sync. Check console for details.");
     } finally {
       setIsSyncing(false);
     }

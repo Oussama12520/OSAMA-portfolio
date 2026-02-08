@@ -102,24 +102,46 @@ const App: React.FC = () => {
   // --- Render Functions ---
 
   const renderHero = () => (
-    <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+    <section className="relative pt-24 pb-20 px-6 overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="max-w-7xl mx-auto text-center relative z-10">
+      <div className="max-w-7xl mx-auto text-center relative z-10 flex flex-col items-center">
+
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-primary text-sm font-mono mb-6 animate-pulse">
           <Terminal size={14} />
           <span>System.Init(User="OSAMA");</span>
         </div>
+
+        {/* Stylized Name Identity - Interactive Letters */}
+        <div className="mb-4 relative cursor-default inline-block grouped">
+          <h2 className="text-3xl md:text-5xl font-black font-mono text-white flex flex-col items-center tracking-tighter">
+            <span className="text-xl md:text-2xl font-sans font-normal text-slate-400 tracking-normal mb-2">Hi I'm</span>
+            <div className="flex items-center gap-1 hover:gap-3 transition-all duration-300 cursor-pointer group">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer group-hover:scale-105 transition-transform duration-300">
+                &lt;O
+              </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-amber-500 bg-[length:200%_auto] animate-shimmer drop-shadow-[0_0_15px_rgba(234,179,8,0.6)] text-4xl md:text-6xl group-hover:animate-spin-y group-hover:drop-shadow-[0_0_30px_rgba(234,179,8,1)] transition-all duration-300 ease-out z-10 mx-1">
+                $
+              </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer group-hover:scale-105 transition-transform duration-300">
+                AMA/&gt;
+              </span>
+            </div>
+          </h2>
+        </div>
+
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
           Backend Developer <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
             & Bot Expert
           </span>
         </h1>
+
         <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
           I build high-performance Discord bots, automation tools, and PC software.
           Expert in <span className="text-primary font-bold">C#</span> & <span className="text-secondary font-bold">Python</span>.
           Passionate about clean code and scalable architecture.
         </p>
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a href="#portfolio" className="bg-primary hover:bg-emerald-400 text-darker font-bold py-3 px-8 rounded-lg transition-all flex items-center justify-center gap-2">
             View Portfolio <ChevronRight size={18} />

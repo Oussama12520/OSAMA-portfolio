@@ -1,28 +1,43 @@
 [
   {
-    "id": "1770578715355",
-    "title": "ggg",
-    "description": "gggg",
+    "id": "1770578956266",
+    "title": "gggy",
+    "description": "ghgh",
     "category": "Discord Bot",
     "technologies": [],
     "cost": "",
-    "createdAt": 1770578715355,
+    "createdAt": 1770578956266,
     "imageUrl": "",
-    "inviteLink": "",
+    "inviteLink": "gyyy",
     "demoLink": ""
   },
   {
-    "id": "1770578433920",
-    "title": "fggdfgdfgdgg",
-    "description": "fdgdsfg",
-    "category": "Discord Bot",
+    "id": "3",
+    "title": "Auto-Scraper Pro",
+    "description": "PC Software built with C# to scrape e-commerce data and export to Excel/CSV with proxy support.",
+    "category": "PC Software",
+    "imageUrl": "https://picsum.photos/400/250?random=3",
+    "cost": "$150 Lifetime",
     "technologies": [
-      "sdfgsdfgsfdg"
+      "C#",
+      ".NET 6",
+      "Selenium"
     ],
-    "cost": "",
-    "createdAt": 1770578433920,
-    "imageUrl": "sgsgfg",
-    "inviteLink": "sdgfgfg",
-    "demoLink": ""
+    "createdAt": 1770578740191
+  },
+  {
+    "id": "4",
+    "title": "Telegram Notify Agent",
+    "description": "AI Agent that monitors news feeds and sends summarized alerts to Telegram channels instantly.",
+    "category": "AI Agent",
+    "imageUrl": "https://picsum.photos/400/250?random=4",
+    "inviteLink": "#",
+    "cost": "$10 / month",
+    "technologies": [
+      "Python",
+      "Aiogram",
+      "Gemini API"
+    ],
+    "createdAt": 1770578640191
   }
 ]

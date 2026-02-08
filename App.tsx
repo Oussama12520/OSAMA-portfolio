@@ -48,8 +48,8 @@ const App: React.FC = () => {
         }
       };
 
-      // Delay check by 3 seconds to let initial load finish
-      const timer = setTimeout(checkForUpdates, 3000);
+      // Delay check by 1 second (fast check)
+      const timer = setTimeout(checkForUpdates, 1000);
       return () => clearTimeout(timer);
     }
   }, [isAdmin]);

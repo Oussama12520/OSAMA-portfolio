@@ -64,7 +64,7 @@ const INITIAL_PROJECTS: Project[] = [
 ];
 
 const GITHUB_RAW_URL = (repo: string, branch: string) =>
-  `https://raw.githubusercontent.com/${repo}/${branch}/projects.json?t=${Date.now()}`;
+  `https://raw.githubusercontent.com/${repo}/${branch}/projects.json?t=${Date.now()}&r=${Math.random()}`;
 
 export const getProjects = async (skipGitHubSync = false): Promise<Project[]> => {
   try {

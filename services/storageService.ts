@@ -74,9 +74,7 @@ export const getProjects = async (): Promise<Project[]> => {
     // 1. Try to fetch from GitHub first (Primary Source of Truth)
     try {
       // Add cache-busting timestamp to URL
-      const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch), {
-        headers: { 'Cache-Control': 'no-cache' }
-      });
+      const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
 
       if (response.ok) {
         const remoteProjects = await response.json();

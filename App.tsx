@@ -150,20 +150,6 @@ const App: React.FC = () => {
               </button>
             ))}
           </div>
-
-          {/* Refresh Button for Visitors (only show when not admin) */}
-          {!isAdmin && (
-            <div className="flex justify-center mt-6">
-              <button
-                onClick={handleCheckForUpdates}
-                disabled={isLoading}
-                className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-primary font-medium py-2 px-6 rounded-lg border border-slate-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
-                Check for Updates
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Loading State */}

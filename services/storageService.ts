@@ -64,42 +64,50 @@ const INITIAL_PROJECTS: Project[] = [
 ];
 
 const GITHUB_RAW_URL = (repo: string, branch: string) =>
-  `https://raw.githubusercontent.com/${repo}/${branch}/projects.json`;
+  `https://raw.githubusercontent.com/${repo}/${branch}/projects.json?t=${Date.now()}`;
 
 export const getProjects = async (): Promise<Project[]> => {
   try {
-    const count = await db.projects.count();
+    const config = getSyncConfig();
+    const targetRepo = config.repo || 'Oussama12520/OSAMA-portfolio';
 
-    // If local DB is empty, try to fetch from GitHub first
-    if (count === 0) {
-      console.log("Database empty, checking for remote data...");
-      const config = getSyncConfig();
-      const targetRepo = config.repo || 'Oussama12520/OSAMA-portfolio';
+    // 1. Try to fetch from GitHub first (Primary Source of Truth)
+    try {
+      // Add cache-busting timestamp to URL
+      const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch), {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
 
-      try {
-        const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
-        if (response.ok) {
-          const remoteProjects = await response.json();
-          if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
-            console.log("Seeding from GitHub projects.json...");
-            await db.projects.bulkAdd(remoteProjects);
-            return remoteProjects;
-          }
+      if (response.ok) {
+        const remoteProjects = await response.json();
+        if (Array.isArray(remoteProjects)) {
+          console.log("Syncing with latest GitHub projects.json...");
+
+          // Only clear and update if data is different (optional optimization)
+          // For now, simple clear and bulkAdd is fine for small datasets
+          await db.projects.clear();
+          await db.projects.bulkAdd(remoteProjects);
+          return remoteProjects;
         }
-      } catch (e) {
-        console.warn("Failed to fetch from remote, falling back to mock data", e);
       }
+    } catch (e) {
+      console.warn("Failed to fetch from GitHub, falling back to local data.", e);
+    }
 
-      // Final fallback to mock data if GitHub fetch fails or is empty
-      console.log("Seeding initial mock data...");
+    // 2. Fallback to local IndexedDB (Offline Support)
+    const localProjects = await db.projects.toArray();
+
+    // 3. Final fallback: Seed if completely empty
+    if (localProjects.length === 0) {
+      console.log("No data found anywhere, seeding mock projects...");
       await db.projects.bulkAdd(INITIAL_PROJECTS);
       return INITIAL_PROJECTS;
     }
 
-    return await db.projects.toArray();
+    return localProjects;
   } catch (error) {
-    console.error("Database error:", error);
-    return [];
+    console.error("Critical error in getProjects:", error);
+    return INITIAL_PROJECTS;
   }
 };
 

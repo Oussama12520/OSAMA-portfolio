@@ -1,6 +1,7 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 
 let chatSession: Chat | null = null;
+let isApiKeyValid = false;
 
 const SYSTEM_INSTRUCTION = `
 You are an AI assistant for OSAMA's professional portfolio.
@@ -24,26 +25,49 @@ You have access to the context of his work.
 `;
 
 export const initializeChat = async (contextData: string) => {
-  // Use process.env.API_KEY directly as per guidelines.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  
-  chatSession = ai.chats.create({
-    model: 'gemini-3-flash-preview',
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION + `\n\nCurrent Project List Context:\n${contextData}`,
-    },
-  });
+  try {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
+
+    // Check if API key exists and is not a placeholder
+    if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY' || apiKey.includes('PLACEHOLDER')) {
+      console.warn('Gemini API key not configured. AI Chat will be disabled.');
+      isApiKeyValid = false;
+      return;
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
+    chatSession = ai.chats.create({
+      model: 'gemini-3-flash-preview',
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION + `\n\nCurrent Project List Context:\n${contextData}`,
+      },
+    });
+
+    isApiKeyValid = true;
+  } catch (error) {
+    console.error('Failed to initialize Gemini chat:', error);
+    isApiKeyValid = false;
+    chatSession = null;
+  }
 };
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {
+  if (!isApiKeyValid) {
+    return "AI Chat is currently unavailable. Please contact Osama directly for inquiries.";
+  }
+
   if (!chatSession) {
     await initializeChat("Visitor has started a chat.");
+    if (!isApiKeyValid) {
+      return "AI Chat is currently unavailable. Please contact Osama directly for inquiries.";
+    }
   }
 
   try {
     if (chatSession) {
-        const response = await chatSession.sendMessage({ message });
-        return response.text || "I didn't quite catch that. Could you rephrase?";
+      const response = await chatSession.sendMessage({ message });
+      return response.text || "I didn't quite catch that. Could you rephrase?";
     }
     return "Error: Chat session not initialized.";
   } catch (error) {

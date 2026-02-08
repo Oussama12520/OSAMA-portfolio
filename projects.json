@@ -10,20 +10,5 @@
     "imageUrl": "",
     "inviteLink": "ss",
     "demoLink": ""
-  },
-  {
-    "id": "4",
-    "title": "Telegram Notify Agent",
-    "description": "AI Agent that monitors news feeds and sends summarized alerts to Telegram channels instantly.",
-    "category": "AI Agent",
-    "imageUrl": "https://picsum.photos/400/250?random=4",
-    "inviteLink": "#",
-    "cost": "$10 / month",
-    "technologies": [
-      "Python",
-      "Aiogram",
-      "Gemini API"
-    ],
-    "createdAt": 1770581877102
   }
 ]

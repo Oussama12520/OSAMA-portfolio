@@ -71,14 +71,14 @@ export const getProjects = async (skipGitHubSync = false): Promise<Project[]> =>
     const config = getSyncConfig();
     const targetRepo = config.repo || 'Oussama12520/OSAMA-portfolio';
 
-    // Check local data first
+    // ALWAYS check local data first
     const localProjects = await db.projects.toArray();
 
     // If in admin mode, ALWAYS use local data (never fetch from GitHub)
     if (skipGitHubSync) {
       console.log("Admin mode: Using local data only");
 
-      // If local is empty, seed with mock data
+      // If local is empty, seed with mock data for admin
       if (localProjects.length === 0) {
         console.log("Seeding mock projects for admin...");
         await db.projects.bulkAdd(INITIAL_PROJECTS);
@@ -88,35 +88,32 @@ export const getProjects = async (skipGitHubSync = false): Promise<Project[]> =>
       return localProjects;
     }
 
-    // For public visitors: Try to fetch from GitHub
+    // For public visitors: Local database is SOURCE OF TRUTH
+    // Only fetch from GitHub if database is COMPLETELY EMPTY (first ever visit)
+    if (localProjects.length > 0) {
+      console.log("Using local database (source of truth)");
+      return localProjects;
+    }
+
+    // Database is empty - this is first visit, seed from GitHub
+    console.log("First visit detected - seeding from GitHub...");
     try {
       const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
 
       if (response.ok) {
         const remoteProjects = await response.json();
         if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
-          console.log("Fetched projects from GitHub for public view");
-
-          // ONLY update local cache if it's empty (first visit)
-          // This prevents overwriting admin's unsaved local changes
-          if (localProjects.length === 0) {
-            await db.projects.bulkAdd(remoteProjects);
-          }
-
+          console.log("Seeded database from GitHub");
+          await db.projects.bulkAdd(remoteProjects);
           return remoteProjects;
         }
       }
     } catch (e) {
-      console.warn("Failed to fetch from GitHub, using local/mock data.", e);
-    }
-
-    // Fallback to local data if GitHub fetch failed
-    if (localProjects.length > 0) {
-      return localProjects;
+      console.warn("Failed to fetch from GitHub, using mock data.", e);
     }
 
     // Final fallback: Mock data
-    console.log("No data found, seeding mock projects...");
+    console.log("Seeding mock projects...");
     await db.projects.bulkAdd(INITIAL_PROJECTS);
     return INITIAL_PROJECTS;
   } catch (error) {

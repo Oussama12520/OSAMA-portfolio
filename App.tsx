@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './index.css';
 import { getProjects, forceRefreshFromGitHub } from './services/storageService';
 import { Project, ProjectCategory } from './types';
 import Admin from './components/Admin';

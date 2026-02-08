@@ -77,14 +77,7 @@ export const getProjects = async (skipGitHubSync = false): Promise<Project[]> =>
     // If in admin mode, ALWAYS use local data (never fetch from GitHub)
     if (skipGitHubSync) {
       console.log("Admin mode: Using local data only");
-
-      // If local is empty, seed with mock data for admin
-      if (localProjects.length === 0) {
-        console.log("Seeding mock projects for admin...");
-        await db.projects.bulkAdd(INITIAL_PROJECTS);
-        return INITIAL_PROJECTS;
-      }
-
+      // Intentionally return empty list if none found (don't seed mock data)
       return localProjects;
     }
 
@@ -102,9 +95,13 @@ export const getProjects = async (skipGitHubSync = false): Promise<Project[]> =>
 
       if (response.ok) {
         const remoteProjects = await response.json();
-        if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
+        if (Array.isArray(remoteProjects)) {
           console.log("Seeded database from GitHub");
-          await db.projects.bulkAdd(remoteProjects);
+          // Even if empty, we save it (as empty) to stop future fetches
+          // But bulkAdd([]) might fail or do nothing, so we just return it
+          if (remoteProjects.length > 0) {
+            await db.projects.bulkAdd(remoteProjects);
+          }
           return remoteProjects;
         }
       }
@@ -112,10 +109,8 @@ export const getProjects = async (skipGitHubSync = false): Promise<Project[]> =>
       console.warn("Failed to fetch from GitHub, using mock data.", e);
     }
 
-    // Final fallback: Mock data
-    console.log("Seeding mock projects...");
-    await db.projects.bulkAdd(INITIAL_PROJECTS);
-    return INITIAL_PROJECTS;
+    // Final fallback: If GitHub fetch failed, return empty (don't seed mock data)
+    return [];
   } catch (error) {
     console.error("Critical error in getProjects:", error);
     return INITIAL_PROJECTS;

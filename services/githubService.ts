@@ -18,11 +18,12 @@ export const updateFileOnGithub = async (
     const url = `https://api.github.com/repos/${repo}/contents/${path}`;
 
     try {
-        // 1. Get the current file (to get the SHA)
+        // 1. Get the current file (to get the SHA) - Use timestamp to prevent caching
         let sha: string | undefined;
-        const getResponse = await fetch(`${url}?ref=${branch}`, {
+        const getResponse = await fetch(`${url}?ref=${branch}&t=${Date.now()}`, {
             headers: {
                 Authorization: `token ${token}`,
+                'Cache-Control': 'no-cache'
             },
         });
 

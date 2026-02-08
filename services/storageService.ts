@@ -128,11 +128,16 @@ export const forceRefreshFromGitHub = async (): Promise<Project[]> => {
 
     if (response.ok) {
       const remoteProjects = await response.json();
-      if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
+      if (Array.isArray(remoteProjects)) {
         // Clear local database and replace with fresh GitHub data
+        // logic: even if it's empty, we must clear local to match remote
         await db.projects.clear();
-        await db.projects.bulkAdd(remoteProjects);
-        console.log("Successfully refreshed from GitHub!");
+
+        if (remoteProjects.length > 0) {
+          await db.projects.bulkAdd(remoteProjects);
+        }
+
+        console.log("Successfully refreshed from GitHub with " + remoteProjects.length + " projects");
         return remoteProjects;
       }
     }

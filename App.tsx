@@ -20,6 +20,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 
+import MouseGlow from './components/MouseGlow';
+
 const App: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filter, setFilter] = useState<ProjectCategory | 'All'>('All');

@@ -66,33 +66,34 @@ const INITIAL_PROJECTS: Project[] = [
 const GITHUB_RAW_URL = (repo: string, branch: string) =>
   `https://raw.githubusercontent.com/${repo}/${branch}/projects.json?t=${Date.now()}`;
 
-export const getProjects = async (): Promise<Project[]> => {
+export const getProjects = async (skipGitHubSync = false): Promise<Project[]> => {
   try {
     const config = getSyncConfig();
     const targetRepo = config.repo || 'Oussama12520/OSAMA-portfolio';
 
-    // 1. Try to fetch from GitHub first (Primary Source of Truth)
-    try {
-      // Add cache-busting timestamp to URL
-      const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
+    // 1. Try to fetch from GitHub first (Primary Source of Truth) - UNLESS in admin mode
+    if (!skipGitHubSync) {
+      try {
+        // Add cache-busting timestamp to URL
+        const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
 
-      if (response.ok) {
-        const remoteProjects = await response.json();
-        if (Array.isArray(remoteProjects)) {
-          console.log("Syncing with latest GitHub projects.json...");
+        if (response.ok) {
+          const remoteProjects = await response.json();
+          if (Array.isArray(remoteProjects)) {
+            console.log("Syncing with latest GitHub projects.json...");
 
-          // Only clear and update if data is different (optional optimization)
-          // For now, simple clear and bulkAdd is fine for small datasets
-          await db.projects.clear();
-          await db.projects.bulkAdd(remoteProjects);
-          return remoteProjects;
+            // Clear and update local cache
+            await db.projects.clear();
+            await db.projects.bulkAdd(remoteProjects);
+            return remoteProjects;
+          }
         }
+      } catch (e) {
+        console.warn("Failed to fetch from GitHub, falling back to local data.", e);
       }
-    } catch (e) {
-      console.warn("Failed to fetch from GitHub, falling back to local data.", e);
     }
 
-    // 2. Fallback to local IndexedDB (Offline Support)
+    // 2. Fallback to local IndexedDB (Offline Support OR Admin Mode)
     const localProjects = await db.projects.toArray();
 
     // 3. Final fallback: Seed if completely empty

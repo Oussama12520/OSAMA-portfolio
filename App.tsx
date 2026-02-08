@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getProjects, getProjectCategories } from './services/storageService';
+import './index.css';
+import { getProjects, forceRefreshFromGitHub } from './services/storageService';
 import { Project, ProjectCategory } from './types';
 import Admin from './components/Admin';
 import AIChat from './components/AIChat';
@@ -16,7 +17,8 @@ import {
   Lock,
   ChevronRight,
   ShieldCheck,
-  Loader2
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -41,6 +43,20 @@ const App: React.FC = () => {
       setProjects(data.sort((a, b) => b.createdAt - a.createdAt));
     } catch (error) {
       console.error("Failed to fetch projects", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCheckForUpdates = async () => {
+    setIsLoading(true);
+    try {
+      const data = await forceRefreshFromGitHub();
+      setProjects(data.sort((a, b) => b.createdAt - a.createdAt));
+      alert("Projects updated successfully!");
+    } catch (error) {
+      console.error("Failed to check for updates", error);
+      alert("No updates available or connection failed.");
     } finally {
       setIsLoading(false);
     }
@@ -127,14 +143,28 @@ const App: React.FC = () => {
                 key={cat}
                 onClick={() => setFilter(cat as ProjectCategory | 'All')}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === cat
-                    ? 'bg-primary text-darker font-bold shadow-lg shadow-emerald-900/20'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                  ? 'bg-primary text-darker font-bold shadow-lg shadow-emerald-900/20'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
                   }`}
               >
                 {cat}
               </button>
             ))}
           </div>
+
+          {/* Refresh Button for Visitors (only show when not admin) */}
+          {!isAdmin && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleCheckForUpdates}
+                disabled={isLoading}
+                className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-primary font-medium py-2 px-6 rounded-lg border border-slate-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+                Check for Updates
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Loading State */}

@@ -122,6 +122,33 @@ export const getProjects = async (skipGitHubSync = false): Promise<Project[]> =>
   }
 };
 
+// Force refresh from GitHub (for visitors to manually check for updates)
+export const forceRefreshFromGitHub = async (): Promise<Project[]> => {
+  try {
+    const config = getSyncConfig();
+    const targetRepo = config.repo || 'Oussama12520/OSAMA-portfolio';
+
+    console.log("Force refreshing from GitHub...");
+    const response = await fetch(GITHUB_RAW_URL(targetRepo, config.branch));
+
+    if (response.ok) {
+      const remoteProjects = await response.json();
+      if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
+        // Clear local database and replace with fresh GitHub data
+        await db.projects.clear();
+        await db.projects.bulkAdd(remoteProjects);
+        console.log("Successfully refreshed from GitHub!");
+        return remoteProjects;
+      }
+    }
+
+    throw new Error("Failed to fetch from GitHub");
+  } catch (error) {
+    console.error("Force refresh failed:", error);
+    throw error;
+  }
+};
+
 export const getSyncConfig = () => {
   return {
     token: localStorage.getItem('gh_token') || '',

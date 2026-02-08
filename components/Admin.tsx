@@ -90,9 +90,9 @@ const Admin: React.FC<AdminProps> = ({ projects, onUpdate, onLogout }) => {
 
     setIsSyncing(true);
     try {
-      // CRITICAL FIX: Fetch fresh projects from IndexedDB before syncing
+      // CRITICAL FIX: Fetch fresh projects from LOCAL IndexedDB (not GitHub!)
       const { getProjects } = await import('../services/storageService');
-      const freshProjects = await getProjects();
+      const freshProjects = await getProjects(true); // true = skipGitHubSync, read from local DB only
 
       const result = await updateFileOnGithub(
         { ...syncConfig, path: 'projects.json' },

@@ -33,6 +33,8 @@
             shimmer: 'shimmer 3s linear infinite',
             'spin-y': 'spin-y 2s linear infinite',
             'float': 'float 3s ease-in-out infinite',
+            'gold-flash': 'gold-flash 8s ease-in-out infinite',
+            'exclaim-bounce': 'exclaim-bounce 0.6s ease-out',
           },
           keyframes: {
             shimmer: {
@@ -46,6 +48,19 @@
             float: {
               '0%, 100%': { transform: 'translateY(0)' },
               '50%': { transform: 'translateY(-10px)' },
+            },
+            'gold-flash': {
+              '0%, 70%': { backgroundPosition: '-200% center', opacity: '0' },
+              '75%': { opacity: '1' },
+              '85%': { backgroundPosition: '200% center', opacity: '1' },
+              '90%, 100%': { backgroundPosition: '200% center', opacity: '0' },
+            },
+            'exclaim-bounce': {
+              '0%': { transform: 'scale(1) rotate(0deg)' },
+              '30%': { transform: 'scale(1.3) rotate(-10deg)' },
+              '50%': { transform: 'scale(1.2) rotate(10deg)' },
+              '70%': { transform: 'scale(1.25) rotate(-5deg)' },
+              '100%': { transform: 'scale(1.2) rotate(0deg)' },
             }
           }
         }

@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const MouseGlow: React.FC = () => {
-    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -15,55 +15,105 @@ const MouseGlow: React.FC = () => {
         canvas.width = width;
         canvas.height = height;
 
-        const particles: { x: number; y: number; vx: number; vy: number }[] = [];
-        const particleCount = 50; // Number of particles
-        const connectionDistance = 150;
-        const mouse = { x: -1000, y: -1000 };
+        // Cube Logic
+        const cubes: { x: number; y: number; z: number; size: number; rotation: { x: number, y: number, z: number }; speed: { x: number, y: number, z: number } }[] = [];
+        const count = 20;
 
-        // Init particles
-        for (let i = 0; i < particleCount; i++) {
-            particles.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
+        for (let i = 0; i < count; i++) {
+            cubes.push({
+                x: (Math.random() - 0.5) * width * 1.5,
+                y: (Math.random() - 0.5) * height * 1.5,
+                z: Math.random() * 500 + 100,
+                size: Math.random() * 30 + 20,
+                rotation: { x: Math.random(), y: Math.random(), z: Math.random() },
+                speed: {
+                    x: (Math.random() - 0.5) * 0.02,
+                    y: (Math.random() - 0.5) * 0.02,
+                    z: (Math.random() - 0.5) * 0.02
+                }
             });
         }
 
-        const animate = () => {
-            ctx.clearRect(0, 0, width, height);
+        const project = (x: number, y: number, z: number) => {
+            const scale = 500 / (500 + z);
+            return { x: width / 2 + x * scale, y: height / 2 + y * scale, scale };
+        };
 
-            // Update and draw particles
-            particles.forEach((p, i) => {
-                p.x += p.vx;
-                p.y += p.vy;
+        const drawCube = (cube: any) => {
+            // Simple 8 vertices of a cube
+            const v = [
+                { x: -1, y: -1, z: -1 }, { x: 1, y: -1, z: -1 }, { x: 1, y: 1, z: -1 }, { x: -1, y: 1, z: -1 },
+                { x: -1, y: -1, z: 1 }, { x: 1, y: -1, z: 1 }, { x: 1, y: 1, z: 1 }, { x: -1, y: 1, z: 1 }
+            ];
 
-                // Bounce off edges
-                if (p.x < 0 || p.x > width) p.vx *= -1;
-                if (p.y < 0 || p.y > height) p.vy *= -1;
+            // Rotate & Scale
+            const rotatedV = v.map(p => {
+                // Rotate X
+                let y = p.y * Math.cos(cube.rotation.x) - p.z * Math.sin(cube.rotation.x);
+                let z = p.y * Math.sin(cube.rotation.x) + p.z * Math.cos(cube.rotation.x);
+                let x = p.x;
 
-                // Draw particle
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.5)'; // Primary color
-                ctx.fill();
+                // Rotate Y
+                let z2 = z * Math.cos(cube.rotation.y) - x * Math.sin(cube.rotation.y);
+                let x2 = z * Math.sin(cube.rotation.y) + x * Math.cos(cube.rotation.y);
 
-                // Connect to mouse
-                const dx = mouse.x - p.x;
-                const dy = mouse.y - p.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-
-                if (dist < connectionDistance) {
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(mouse.x, mouse.y);
-                    ctx.strokeStyle = `rgba(16, 185, 129, ${1 - dist / connectionDistance})`;
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                }
+                // Apply Size + World Position
+                return {
+                    x: x2 * cube.size + cube.x,
+                    y: y * cube.size + cube.y,
+                    z: z2 * cube.size + cube.z
+                };
             });
 
-            requestAnimationFrame(animate);
+            // Project to 2D
+            const points = rotatedV.map(p => project(p.x, p.y, p.z));
+
+            ctx.strokeStyle = '#10B981'; // Emerald
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.3;
+
+            // Draw Edges
+            const edges = [
+                [0, 1], [1, 2], [2, 3], [3, 0], // Front face
+                [4, 5], [5, 6], [6, 7], [7, 4], // Back face
+                [0, 4], [1, 5], [2, 6], [3, 7]  // Connecting lines
+            ];
+
+            ctx.beginPath();
+            edges.forEach(edge => {
+                ctx.moveTo(points[edge[0]].x, points[edge[0]].y);
+                ctx.lineTo(points[edge[1]].x, points[edge[1]].y);
+            });
+            ctx.stroke();
+
+            return points; // Return points for connection logic
+        };
+
+        let time = 0;
+        const draw = () => {
+            ctx.clearRect(0, 0, width, height);
+
+            time += 0.01;
+            cubes.forEach(cube => {
+                cube.rotation.x += cube.speed.x;
+                cube.rotation.y += cube.speed.y;
+                cube.rotation.z += cube.speed.z;
+
+                // Interactive tilt
+                // cube.x += Math.sin(time) * 0.5;
+            });
+
+            // Sort by Z for simpler rendering (painters algorithm basic)
+            cubes.sort((a, b) => b.z - a.z);
+
+            const allPoints: { x: number, y: number }[] = [];
+
+            cubes.forEach(cube => {
+                const pts = drawCube(cube);
+                allPoints.push(pts[0]); // Track centers/corners for connections (optional)
+            });
+
+            requestAnimationFrame(draw);
         };
 
         const handleResize = () => {
@@ -73,18 +123,11 @@ const MouseGlow: React.FC = () => {
             canvas.height = height;
         };
 
-        const handleMouseMove = (e: MouseEvent) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        };
-
         window.addEventListener('resize', handleResize);
-        window.addEventListener('mousemove', handleMouseMove);
-        const animationId = requestAnimationFrame(animate);
+        const animationId = requestAnimationFrame(draw);
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            window.removeEventListener('mousemove', handleMouseMove);
             cancelAnimationFrame(animationId);
         };
     }, []);
@@ -92,7 +135,7 @@ const MouseGlow: React.FC = () => {
     return (
         <canvas
             ref={canvasRef}
-            className="fixed inset-0 z-0 pointer-events-none"
+            className="fixed inset-0 z-0 pointer-events-none opacity-40"
         />
     );
 };

@@ -3,6 +3,8 @@ import { getProjects, forceRefreshFromGitHub, getProjectCategories } from './ser
 import { Project, ProjectCategory } from './types';
 import Admin from './components/Admin';
 import AIChat from './components/AIChat';
+import HackerText from './components/HackerText';
+
 import {
   Code2,
   Terminal,
@@ -115,16 +117,25 @@ const App: React.FC = () => {
         <div className="mb-4 relative cursor-default inline-block grouped">
           <h2 className="text-3xl md:text-5xl font-black font-mono text-white flex flex-col items-center tracking-tighter">
             <span className="text-xl md:text-2xl font-sans font-normal text-slate-400 tracking-normal mb-2">Hi I'm</span>
-            <div className="flex items-center gap-1 hover:gap-3 transition-all duration-300 cursor-pointer group">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer group-hover:scale-105 transition-transform duration-300">
-                &lt;O
-              </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-amber-500 bg-[length:200%_auto] animate-shimmer drop-shadow-[0_0_15px_rgba(234,179,8,0.6)] text-4xl md:text-6xl group-hover:animate-spin-y group-hover:drop-shadow-[0_0_30px_rgba(234,179,8,1)] transition-all duration-300 ease-out z-10 mx-1">
-                $
-              </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer group-hover:scale-105 transition-transform duration-300">
-                AMA/&gt;
-              </span>
+
+
+            <div className="flex items-center transition-all duration-300 cursor-pointer group hover:-translate-y-1 relative gap-0">
+              {/* Subtle Blue Glow */}
+              <div className="absolute inset-0 blur-xl bg-gradient-to-r from-sky-400/20 via-white/20 to-sky-400/20 opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+
+              {/* Exclamation Mark with Special Animation */}
+              <HackerText
+                text="!"
+                revealSpeed={300}
+                className="relative text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer drop-shadow-[0_0_15px_rgba(56,189,248,0.4)] group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-amber-300 group-hover:via-yellow-200 group-hover:to-amber-400 group-hover:animate-exclaim-bounce group-hover:drop-shadow-[0_0_30px_rgba(251,191,36,0.9)] transition-all duration-300 text-4xl md:text-6xl font-black inline-block origin-bottom"
+              />
+
+              {/* Main Name Text */}
+              <HackerText
+                text="OSAMA"
+                revealSpeed={500}
+                className="relative text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer drop-shadow-[0_0_15px_rgba(56,189,248,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(56,189,248,0.6)] group-hover:scale-105 transition-all duration-500 text-4xl md:text-6xl font-black"
+              />
             </div>
           </h2>
         </div>

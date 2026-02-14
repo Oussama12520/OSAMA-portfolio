@@ -300,7 +300,7 @@ const App: React.FC = () => {
 
         <h2 className="text-3xl font-bold text-white mb-6">Ready to Start a Project?</h2>
         <p className="text-slate-400 mb-8 max-w-lg mx-auto">
-          Whether you need a custom Discord bot, a complex web scraper, or a full-stack dashboard, I'm here to help turn your ideas into clean, efficient code.
+          Whether you need a custom Discord bot, a complex web scraper, or a powerful backend system, I'm here to help turn your ideas into clean, efficient code.
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">

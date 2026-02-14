@@ -1,14 +1,23 @@
 [
   {
-    "id": "1770586575924",
-    "title": "ggm",
-    "description": "ggm",
-    "category": "Discord Bot",
-    "technologies": [],
-    "cost": "",
-    "createdAt": 1770586575924,
+    "id": "1771084290688",
+    "title": "Pix2ASCII",
+    "description": "Pix2ASCII Art Studio is an AI-powered web app that converts images into high-quality ASCII art. Built with React 19 and Vite 6, and powered by Google Gemini 1.5 Flash, it analyzes images to optimize character palettes, styles, and resolution. With real-time rendering, multiple ASCII styles, color support, and high-resolution exports, it combines retro terminal aesthetics with modern AI performance.",
+    "category": "Web Service",
+    "technologies": [
+      "AI",
+      "ASCII Art",
+      "Image Processing",
+      "Generative AI",
+      "ReactJS",
+      "Vite",
+      "Google Gemini",
+      "Web App"
+    ],
+    "cost": "0",
+    "createdAt": 1771084290688,
     "imageUrl": "",
     "inviteLink": "",
-    "demoLink": ""
+    "demoLink": "https://oussama12520.github.io/Pix2ASCII/"
   }
 ]

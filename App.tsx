@@ -304,17 +304,19 @@ const App: React.FC = () => {
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">
-          <a href="#" className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-xl border border-slate-700">
+          <a href="mailto:oussemamasmoudi7@gmail.com" className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-xl border border-slate-700">
             <Mail className="text-primary" />
-            <span>contact@osama.dev</span>
+            <span>oussemamasmoudi7@gmail.com</span>
           </a>
-          <a href="#" className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-xl border border-slate-700">
+          <a href="https://github.com/Oussama12520" className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-xl border border-slate-700">
             <Github className="text-white" />
-            <span>github.com/osama</span>
+            <span>github.com/Oussama12520</span>
           </a>
-          <a href="#" className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-xl border border-slate-700">
-            <Layout className="text-[#5865F2]" />
-            <span>Discord: osama#0001</span>
+          <a href="https://discord.gg/Hw3spF8R6H" className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-xl border border-slate-700">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-[#5865F2]" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152c-.0741.1345-.157.305-.2137.4398-1.5312-.2286-3.053-.2286-4.562 0-.0567-.1348-.1396-.3053-.2137-.4398a19.7913 19.7913 0 00-4.8851 1.5152 19.9122 19.9122 0 00-3.0305 7.6806 20.354 20.354 0 005.101 2.5714c.4048-.5534.7674-1.1447 1.085-1.7718-.549-.2082-1.0743-.4665-1.564-.7713a11.517 11.517 0 00.174-.1127 13.9114 13.9114 0 0011.082 0l.174.1127c-.4897.3048-1.015.5631-1.564.7713.3176.6271.6802 1.2184 1.085 1.7718a20.2709 20.2709 0 005.101-2.5714 19.9122 19.9122 0 00-3.0305-7.6806zM8.02 12.278c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.095 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.157-2.4189 1.2107 0 2.1756 1.095 2.1568 2.419 0 1.3332-.946 2.4189-2.157 2.4189z" />
+            </svg>
+            <span>Discord: Join Server</span>
           </a>
         </div>
       </div>

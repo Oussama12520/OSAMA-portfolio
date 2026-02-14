@@ -88,12 +88,12 @@ const App: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin') {
+    if (password === '15989') {
       setIsAdmin(true);
       setShowLogin(false);
       setPassword('');
     } else {
-      alert('Invalid password (hint: admin)');
+      alert('Invalid password');
     }
   };
 
@@ -383,7 +383,7 @@ const App: React.FC = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password..."
+                  placeholder="Password"
                   className="w-full bg-darker border border-slate-700 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
                   autoFocus
                 />

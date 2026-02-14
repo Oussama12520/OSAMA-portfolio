@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Project, ProjectCategory } from '../types';
 import { saveProject, deleteProject, getProjectCategories, getSyncConfig, saveSyncConfig } from '../services/storageService';
 import { updateFileOnGithub } from '../services/githubService';
-import { Plus, Edit, Trash2, X, Save, LogOut, Loader2, RefreshCw, Github, Key, FileJson } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Save, LogOut, Loader2, RefreshCw, Github, Key, FileJson, Upload } from 'lucide-react';
 
 interface AdminProps {
   projects: Project[];
@@ -118,6 +118,52 @@ const Admin: React.FC<AdminProps> = ({ projects, onUpdate, onLogout }) => {
       ...prev,
       technologies: val.split(',').map(t => t.trim()).filter(t => t.length > 0)
     }));
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (optional, but good for UX)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File is too large. Please select an image under 10MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Resize logic (max 1200px)
+        const MAX_SIZE = 1200;
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convert to data URL (WebP for better compression, fallback to JPEG)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setCurrentProject(prev => ({ ...prev, imageUrl: dataUrl }));
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -324,14 +370,39 @@ const Admin: React.FC<AdminProps> = ({ projects, onUpdate, onLogout }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Image URL</label>
-                <input
-                  type="text"
-                  value={currentProject.imageUrl || ''}
-                  onChange={e => setCurrentProject(p => ({ ...p, imageUrl: e.target.value }))}
-                  className="w-full bg-darker border border-slate-700 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
-                  placeholder="https://..."
-                />
+                <label className="block text-sm font-medium text-slate-300 mb-1">Image Source</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={currentProject.imageUrl || ''}
+                    onChange={e => setCurrentProject(p => ({ ...p, imageUrl: e.target.value }))}
+                    className="flex-1 bg-darker border border-slate-700 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                    placeholder="https://... or Upload from PC"
+                  />
+                  <label className="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-white font-medium px-4 rounded-lg cursor-pointer transition-colors">
+                    <Upload size={18} />
+                    <span>Upload</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                  </label>
+                </div>
+                {currentProject.imageUrl?.startsWith('data:image') && (
+                  <div className="mt-2 relative inline-block">
+                    <img src={currentProject.imageUrl} alt="Preview" className="h-20 w-auto rounded border border-slate-700" />
+                    <button
+                      type="button"
+                      onClick={() => setCurrentProject(p => ({ ...p, imageUrl: '' }))}
+                      className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg hover:bg-red-500"
+                    >
+                      <X size={12} />
+                    </button>
+                    <p className="text-[10px] text-slate-500 mt-1">Local Image Loaded (will be saved to DB)</p>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

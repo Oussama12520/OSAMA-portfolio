@@ -2,7 +2,7 @@
   {
     "id": "1771084290688",
     "title": "Pix2ASCII",
-    "description": "Pix2ASCII Art Studio is an AI-powered web app that converts images into high-quality ASCII art. Built with React 19 and Vite 6, and powered by Google Gemini 1.5 Flash, it analyzes images to optimize character palettes, styles, and resolution. With real-time rendering, multiple ASCII styles, color support, and high-resolution exports, it combines retro terminal aesthetics with modern AI performance.",
+    "description": "Pix2ASCII Art Studio is an AI-powered web app that turns images into high-quality ASCII art using React 19, Vite 6, and Google Gemini 1.5 Flash. It offers real-time rendering, multiple styles, color support, and high-resolution exports with a modern retro-terminal aesthetic.",
     "category": "Web Service",
     "technologies": [
       "AI",

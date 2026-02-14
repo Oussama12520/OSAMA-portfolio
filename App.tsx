@@ -36,25 +36,26 @@ const App: React.FC = () => {
   useEffect(() => {
     refreshProjects();
 
-    // Background check for updates (only for visitors)
-    if (!isAdmin) {
+    // Background check for updates (ONLY for visitors)
+    // We skip this if we ARE admin OR we have a GitHub token in localStorage (owner detection)
+    const hasToken = !!localStorage.getItem('gh_token');
+    if (!isAdmin && !hasToken) {
       const checkForUpdates = async () => {
         try {
-          console.log("Checking for updates in background...");
+          console.log("Checking for updates in background (Visitor mode)...");
           await forceRefreshFromGitHub();
-          // If we got here, it means we found updates and updated the DB
-          // So reload the projects from the DB
           const updatedProjects = await getProjects(false);
           setProjects(updatedProjects.sort((a, b) => b.createdAt - a.createdAt));
           console.log("Auto-updated projects from GitHub!");
         } catch (e) {
-          // Silent failure - up to date or network error
+          // Silent failure
         }
       };
 
-      // Delay check by 1 second (fast check)
       const timer = setTimeout(checkForUpdates, 1000);
       return () => clearTimeout(timer);
+    } else {
+      console.log("Background sync disabled (Owner/Admin detected)");
     }
   }, [isAdmin]);
 
